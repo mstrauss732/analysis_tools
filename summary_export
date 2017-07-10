@@ -1,0 +1,37 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+#Read from a local csv file
+df = pd.read_csv("C:/Users/Micah Strauss/Google Drive/WQ Analysis/Full study period/tss_nitrate.csv");
+
+#reindex the series using time data stamp
+df.index = pd.to_datetime(df.ix[:,0], format='%Y-%m-%d %H:%M:%S');
+
+#UTC to Eastern time conversion
+df = df.tz_localize('UTC')
+df = df.tz_convert('US/Eastern')
+
+#resample the dataframe to creat a new dataframe
+#Common Resample Options
+#D       calendar day frequency
+#W       weekly frequency
+#M       month end frequency
+#MS      month start frequency
+#Q       quarter end frequency
+#QS      quarter start frequency
+#A       year end frequency
+#AS      year start frequency
+#H       hourly frequency
+#T       minutely frequency
+#S       secondly frequency
+#L       milliseonds
+#U       microseconds
+#N       nanoseconds
+
+converted = df.resample('H').mean();
+
+print (converted);
+converted.to_csv('C:/Users/Micah Strauss/Google Drive/WQ Analysis/Full study period/tss_nitrate_output.csv');
+
+
