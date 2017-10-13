@@ -1,0 +1,22 @@
+import pandas as pd
+
+# Read in the csv as a pandas dataframe
+df = pd.read_csv('C:/Users/ScottSimpson/Downloads/ewart-ave-rainfall.csv')
+
+# Rename datetime column to 'timeStep_UTC'
+df.columns = df.columns.str.replace('.*timeValue_DateTime.*', 'timeStep_UTC')
+# Round off the datetime to the nearest minute (also removes records that are less than 1 min)
+df['timeStep_UTC'] = df['timeStep_UTC'].values.astype('datetime64[m]')
+# Step 4: Set 'Ingestion Time [UTC]' as the dataframe's dateTime index - this is the primary reference for all columns
+df = df.set_index(pd.DatetimeIndex(df['timeStep_UTC']))
+# Step 8: Duplicate records (index rows) sometimes exist, they must be removed for the program to operate correctly
+df = df[~df.index.duplicated(keep='first')]
+# Step 9: name the index
+df.index.name = 'timeStep_UTC'
+# Step 5: sort ascendingly for time delta calc
+df = df.sort_index(ascending=True)
+# Delete the old 'Ingestion Time [UTC]' column (it's now the dateTime index)
+df = df.drop(['timeStep_UTC'], 1)
+
+# Print result to a new csv file
+df.to_csv('C:/Users/ScottSimpson/Downloads/datafit_result.csv')
